@@ -46,14 +46,14 @@ Das Skript prüft/installiert Docker, legt die `.env` mit einem zufälligen Admi
 
 Keine Subdomain und kein neues Zertifikat nötig – der vorhandene Webserver von ddbmaster.de leitet nur `/compiler/` an den Compiler weiter.
 
-- **nginx**: Inhalt von `deploy/nginx-unterpfad.conf` in den vorhandenen `server { … }`-Block von ddbmaster.de (der mit `listen 443 ssl`) einfügen, dann `nginx -t && systemctl reload nginx`
-- **Apache**: `a2enmod proxy proxy_http headers`, Inhalt von `deploy/apache-unterpfad.conf` in den vorhandenen `<VirtualHost *:443>` von ddbmaster.de einfügen, dann `apachectl configtest && systemctl reload apache2`
+- **nginx**: Inhalt von `deploy/nginx-unterpfad.conf` in den vorhandenen `server { … }`-Block von Your-name.de (der mit `listen 443 ssl`) einfügen, dann `nginx -t && systemctl reload nginx`
+- **Apache**: `a2enmod proxy proxy_http headers`, Inhalt von `deploy/apache-unterpfad.conf` in den vorhandenen `<VirtualHost *:443>` von Your-name.de einfügen, dann `apachectl configtest && systemctl reload apache2`
 
-**Variante B – eigene Subdomain `https://compiler.ddbmaster.de` (`BASE_PATH` leer lassen)**
+**Variante B – eigene Subdomain `https://compiler.Your-name.de` (`BASE_PATH` leer lassen)**
 
-- DNS: `compiler CNAME ddbmaster.de`
-- **nginx**: `deploy/nginx.conf` → `/etc/nginx/sites-available/`, aktivieren, `certbot --nginx -d compiler.ddbmaster.de`
-- **Apache**: `deploy/apache.conf` → `/etc/apache2/sites-available/`, `a2enmod proxy proxy_http headers`, aktivieren, `certbot --apache -d compiler.ddbmaster.de`
+- DNS: `compiler CNAME Your-name.de`
+- **nginx**: `deploy/nginx.conf` → `/etc/nginx/sites-available/`, aktivieren, `certbot --nginx -d compiler.Your-name.de`
+- **Apache**: `deploy/apache.conf` → `/etc/apache2/sites-available/`, `a2enmod proxy proxy_http headers`, aktivieren, `certbot --apache -d compiler.Your-name.de`
 
 ### Einstellungen
 
