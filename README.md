@@ -42,9 +42,9 @@ Das Skript prüft/installiert Docker, legt die `.env` mit einem zufälligen Admi
 
 ### Webserver einrichten
 
-**Variante A – Unterpfad `https://ddbmaster.de/compiler/` (Standard, `BASE_PATH=/compiler` in der `.env`)**
+**Variante A – Unterpfad `https://Your-name.de/compiler/` (Standard, `BASE_PATH=/compiler` in der `.env`)**
 
-Keine Subdomain und kein neues Zertifikat nötig – der vorhandene Webserver von ddbmaster.de leitet nur `/compiler/` an den Compiler weiter.
+Keine Subdomain und kein neues Zertifikat nötig – der vorhandene Webserver von Your-name.de leitet nur `/compiler/` an den Compiler weiter.
 
 - **nginx**: Inhalt von `deploy/nginx-unterpfad.conf` in den vorhandenen `server { … }`-Block von Your-name.de (der mit `listen 443 ssl`) einfügen, dann `nginx -t && systemctl reload nginx`
 - **Apache**: `a2enmod proxy proxy_http headers`, Inhalt von `deploy/apache-unterpfad.conf` in den vorhandenen `<VirtualHost *:443>` von Your-name.de einfügen, dann `apachectl configtest && systemctl reload apache2`
