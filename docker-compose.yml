@@ -1,0 +1,22 @@
+services:
+  compiler:
+    build: .
+    image: cssharp-compiler:1.0.3
+    container_name: cssharp-compiler
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: ${DATA_DIR:-/opt/cssharp-compiler/data}
+    ports:
+      # Nur lokal erreichbar – nach außen geht es über deinen Webserver (nginx/Apache)
+      - "127.0.0.1:${PORT:-8085}:8085"
+    volumes:
+      # Startet die Build-Container (Sandbox) über den Docker-Dienst des Servers
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Muss auf Host und im Container den GLEICHEN Pfad haben
+      - ${DATA_DIR:-/opt/cssharp-compiler/data}:${DATA_DIR:-/opt/cssharp-compiler/data}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

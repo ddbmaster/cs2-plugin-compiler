@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="base-path" content="{{BASE}}">
+  <meta name="site-texts" content="{{SITE_TEXTS}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anleitungen – {{SITE_NAME}}</title>
+  <link rel="icon" href="{{BASE}}/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="{{BASE}}/static/style.css?v={{VERSION}}">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{{BASE}}/"><span class="logo">{{SITE_LOGO}}</span><span>{{SITE_NAME}}<small>{{SITE_SUBTITLE}}</small></span></a>
+    <div class="pills" id="statusPills"></div>
+    <nav class="nav">
+      <a class="icon-btn" href="{{BASE}}/">Compiler</a>
+      <button class="icon-btn" id="langBtn" type="button" title="Sprache / Language">EN</button>
+      <button class="icon-btn" id="themeBtn" type="button" data-i18n-title="nav.theme">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ============================ DEUTSCH ============================ -->
+  <div class="doc" data-lang-block="de">
+    <nav class="toc card card-b">
+      <a href="#de-server">Server vorbereiten</a>
+      <a href="#de-hello">Erstes Plugin</a>
+      <a href="#de-zip">Projekt richtig packen</a>
+      <a href="#de-version">Welche Version?</a>
+      <a href="#de-install">Plugin installieren</a>
+      <a href="#de-errors">Häufige Fehler</a>
+      <a href="#de-privacy">Datenschutz &amp; Sicherheit</a>
+    </nav>
+    <article class="card">
+      <h2 id="de-server">Server vorbereiten</h2>
+      <p>CounterStrikeSharp läuft als Erweiterung von <b>Metamod:Source</b>. Du brauchst also beides:</p>
+      <ol>
+        <li>Metamod:Source (Version 2.x) herunterladen und nach <code>game/csgo/</code> entpacken.</li>
+        <li>In <code>game/csgo/gameinfo.gi</code> unter <code>SearchPaths</code> direkt nach <code>Game_LowViolence</code> die Zeile <code>Game csgo/addons/metamod</code> eintragen.</li>
+        <li>CounterStrikeSharp in der Variante <b>with-runtime</b> (beim ersten Mal) von GitHub herunterladen und ebenfalls nach <code>game/csgo/</code> entpacken.</li>
+        <li>Server starten und in der Konsole <code>meta list</code> eingeben – CounterStrikeSharp sollte aufgelistet sein.</li>
+      </ol>
+
+      <h2 id="de-hello">Erstes Plugin</h2>
+      <p>Ein Plugin ist ein normales C#-Projekt. Auf der Startseite ist bereits ein Demo-Projekt geladen – klick einfach auf <b>Jetzt kompilieren</b>. Die zwei Dateien sehen so aus:</p>
+      <pre><code>&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+    &lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+    &lt;Nullable&gt;enable&lt;/Nullable&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include="CounterStrikeSharp.API" Version="*" ExcludeAssets="runtime" /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</code></pre>
+      <pre><code>using CounterStrikeSharp.API.Core;
+
+public class HalloPlugin : BasePlugin
+{
+    public override string ModuleName =&gt; "Hallo";
+    public override string ModuleVersion =&gt; "1.0.0";
+
+    public override void Load(bool hotReload)
+    {
+        Console.WriteLine("Hallo Welt!");
+    }
+}</code></pre>
+      <p>Neue Dateien legst du im Editor über <b>Neue Datei</b> an. Befehle definierst du mit <code>[ConsoleCommand("css_name")]</code>, Ereignisse mit <code>[GameEventHandler]</code>.</p>
+
+      <h2 id="de-zip">Projekt richtig packen</h2>
+      <ul>
+        <li>Pack den <b>ganzen Projektordner</b> in ein .zip – mit der <code>.csproj</code> und allen <code>.cs</code>-Dateien.</li>
+        <li><code>bin/</code>, <code>obj/</code> und <code>.git/</code> werden automatisch ignoriert, du musst sie nicht entfernen.</li>
+        <li>Verweist dein Projekt auf ein anderes Projekt (z. B. ein Git-Submodul), muss dieser Ordner ebenfalls im .zip sein. <b>GitHub „Download ZIP“ enthält keine Submodule</b> – füge den Ordner selbst hinzu.</li>
+        <li>Liegen mehrere <code>.csproj</code> im Archiv, kannst du das Hauptprojekt auswählen.</li>
+        <li>Verweist die <code>.csproj</code> per <code>HintPath</code> auf eine lokale <code>CounterStrikeSharp.API.dll</code>, wird das automatisch durch das NuGet-Paket ersetzt.</li>
+      </ul>
+
+      <h2 id="de-version">Welche Version?</h2>
+      <p>Die API-Version sollte zur CounterStrikeSharp-Version auf deinem Server passen. Gib in der Server-Konsole <code>meta list</code> oder <code>css_plugins list</code> ein, um sie zu sehen. Im Zweifel nimm die neueste Version.</p>
+      <p>Neuere CounterStrikeSharp-Versionen setzen ein neueres .NET voraus. Passt dein Projekt nicht zur gewählten Version, schlägt der Compiler automatisch eine passende Version vor oder bietet an, das Ziel-Framework umzustellen.</p>
+      <p><b>Release</b> ist für den Live-Server gedacht. <b>Debug</b> enthält zusätzliche Debug-Informationen (.pdb) und ist nur zur Fehlersuche sinnvoll.</p>
+
+      <h2 id="de-install">Plugin installieren</h2>
+      <p>Die heruntergeladene .zip ist schon richtig aufgebaut. Entpacke sie in <code>game/csgo/</code> – das Plugin landet dann in:</p>
+      <pre><code>game/csgo/addons/counterstrikesharp/plugins/DeinPlugin/DeinPlugin.dll</code></pre>
+      <p>Danach den Server neu starten oder in der Konsole <code>css_plugins load DeinPlugin</code> eingeben.</p>
+
+      <h2 id="de-errors">Häufige Fehler</h2>
+      <p><b>Plugin wird nicht geladen:</b> Ordnername und DLL-Name müssen gleich sein. Prüfe die Server-Konsole bzw. die Logs unter <code>addons/counterstrikesharp/logs/</code>.</p>
+      <p><b>CS0246 – Typ oder Namespace nicht gefunden:</b> Es fehlt ein NuGet-Paket, ein <code>using</code> oder eine Projektreferenz.</p>
+      <p><b>CS0117 / CS1061 – Member existiert nicht:</b> Die API hat sich geändert. Das Plugin wurde meist für eine ältere CounterStrikeSharp-Version geschrieben – wähle diese Version aus.</p>
+      <p><b>NU1202 – Paket nicht kompatibel:</b> Ziel-Framework und API-Version passen nicht zusammen.</p>
+      <p><b>CS0006 / Projekt nicht gefunden:</b> Ein referenziertes Projekt fehlt im Archiv (oft ein Submodul).</p>
+      <p>Fehler mit Datei und Zeile kannst du im Ergebnis anklicken – der Editor springt dann direkt zur Stelle.</p>
+
+      <h2 id="de-privacy">Datenschutz &amp; Sicherheit</h2>
+      <ul>
+        <li>Hochgeladene Projekte werden nur zum Kompilieren verwendet. Der Quellcode wird direkt nach dem Build gelöscht, das Ergebnis nach kurzer Zeit.</li>
+        <li>IP-Adressen werden nicht im Klartext gespeichert, nur als Prüfsumme für das Limit pro Stunde.</li>
+        <li>Pakete werden in einer abgeschotteten Umgebung von nuget.org geladen. Das Kompilieren selbst läuft in einem Container <b>ohne Netzwerkzugang</b>.</li>
+        <li>Die Seite lädt keine externen Skripte, Schriften oder Tracker.</li>
+      </ul>
+    </article>
+  </div>
+
+  <!-- ============================ ENGLISH ============================ -->
+  <div class="doc" data-lang-block="en" hidden>
+    <nav class="toc card card-b">
+      <a href="#en-server">Prepare your server</a>
+      <a href="#en-hello">First plugin</a>
+      <a href="#en-zip">Packing the project</a>
+      <a href="#en-version">Which version?</a>
+      <a href="#en-install">Installing the plugin</a>
+      <a href="#en-errors">Common errors</a>
+      <a href="#en-privacy">Privacy &amp; security</a>
+    </nav>
+    <article class="card">
+      <h2 id="en-server">Prepare your server</h2>
+      <p>CounterStrikeSharp runs as an extension of <b>Metamod:Source</b>, so you need both:</p>
+      <ol>
+        <li>Download Metamod:Source (2.x) and extract it into <code>game/csgo/</code>.</li>
+        <li>In <code>game/csgo/gameinfo.gi</code>, add the line <code>Game csgo/addons/metamod</code> under <code>SearchPaths</code>, right after <code>Game_LowViolence</code>.</li>
+        <li>Download CounterStrikeSharp (<b>with-runtime</b> the first time) from GitHub and extract it into <code>game/csgo/</code> as well.</li>
+        <li>Start the server and type <code>meta list</code> in the console – CounterStrikeSharp should be listed.</li>
+      </ol>
+
+      <h2 id="en-hello">First plugin</h2>
+      <p>A plugin is a regular C# project. A demo project is already loaded on the start page – just click <b>Compile now</b>. A minimal plugin:</p>
+      <pre><code>using CounterStrikeSharp.API.Core;
+
+public class HelloPlugin : BasePlugin
+{
+    public override string ModuleName =&gt; "Hello";
+    public override string ModuleVersion =&gt; "1.0.0";
+
+    public override void Load(bool hotReload)
+    {
+        Console.WriteLine("Hello world!");
+    }
+}</code></pre>
+      <p>Create new files in the editor with <b>New file</b>. Commands use <code>[ConsoleCommand("css_name")]</code>, events use <code>[GameEventHandler]</code>.</p>
+
+      <h2 id="en-zip">Packing the project</h2>
+      <ul>
+        <li>Zip the <b>whole project folder</b> – the <code>.csproj</code> and all <code>.cs</code> files.</li>
+        <li><code>bin/</code>, <code>obj/</code> and <code>.git/</code> are ignored automatically.</li>
+        <li>If your project references another project (e.g. a git submodule), that folder must be in the .zip too. <b>GitHub's “Download ZIP” does not include submodules</b>.</li>
+        <li>If there are several <code>.csproj</code> files, you can pick the main project.</li>
+        <li>A <code>HintPath</code> reference to a local <code>CounterStrikeSharp.API.dll</code> is replaced by the NuGet package automatically.</li>
+      </ul>
+
+      <h2 id="en-version">Which version?</h2>
+      <p>The API version should match the CounterStrikeSharp version on your server. Type <code>meta list</code> or <code>css_plugins list</code> in the server console. When in doubt, use the latest.</p>
+      <p>Newer CounterStrikeSharp versions require a newer .NET. If your project doesn't match the selected version, the compiler suggests a matching version or offers to switch the target framework.</p>
+
+      <h2 id="en-install">Installing the plugin</h2>
+      <p>The downloaded .zip is already structured correctly. Extract it into <code>game/csgo/</code>:</p>
+      <pre><code>game/csgo/addons/counterstrikesharp/plugins/YourPlugin/YourPlugin.dll</code></pre>
+      <p>Then restart the server or run <code>css_plugins load YourPlugin</code>.</p>
+
+      <h2 id="en-errors">Common errors</h2>
+      <p><b>Plugin not loading:</b> folder name and DLL name must match. Check the server console or <code>addons/counterstrikesharp/logs/</code>.</p>
+      <p><b>CS0246 – type or namespace not found:</b> a NuGet package, <code>using</code> or project reference is missing.</p>
+      <p><b>CS0117 / CS1061 – member does not exist:</b> the API changed. The plugin was probably written for an older CounterStrikeSharp version – select that version.</p>
+      <p><b>NU1202 – package not compatible:</b> target framework and API version don't match.</p>
+      <p><b>CS0006 / project not found:</b> a referenced project is missing from the archive (often a submodule).</p>
+
+      <h2 id="en-privacy">Privacy &amp; security</h2>
+      <ul>
+        <li>Uploaded projects are only used for compiling. Source code is deleted right after the build, the result shortly after.</li>
+        <li>IP addresses are only stored as a hash for the hourly limit.</li>
+        <li>Packages are fetched from nuget.org in an isolated environment; compiling runs in a container <b>without network access</b>.</li>
+        <li>The site loads no external scripts, fonts or trackers.</li>
+      </ul>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><span data-i18n="footer.made">Betrieben von</span> <a href="{{SITE_OWNER_URL}}" rel="noopener">{{SITE_OWNER}}</a> · v{{VERSION}}</div>
+    <nav>
+      <a id="lnkImpressum" href="#" hidden data-i18n="footer.impressum">Impressum</a>
+      <a id="lnkPrivacy" href="#" hidden data-i18n="footer.privacy">Datenschutz</a>
+    </nav>
+  </div>
+</footer>
+<script src="{{BASE}}/static/i18n.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/common.js?v={{VERSION}}"></script>
+</body>
+</html>
