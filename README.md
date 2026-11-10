@@ -15,12 +15,12 @@ Besucher laden ihr Projekt als `.zip` hoch, wählen die CounterStrikeSharp.API-V
 - Warteschlange, Limit pro IP und Stunde, Statistik nach Framework
 - Deutsch/Englisch, Hell/Dunkel/Automatisch, mobil nutzbar
 - Admin-Bereich unter `/admin` (Aufträge mit Logs, Statistik, Wartung)
-- **Metamod:Source-Plugins (C++)** (ab 1.2.0): aus Git-Repository oder .zip, Linux-Build mit AMBuild
-- **Editor für Metamod-Projekte** (ab 1.3.0): Repository oder ZIP im Browser öffnen, Code ändern, direkt kompilieren, Fehler per Klick anspringen, Projekt als .zip sichern
-- **Editor-Größe anpassbar** (ab 1.3.1): Höhe unten ziehen, Editor an der Grenze zu den Einstellungen breiter ziehen (ab 1.3.2), ganze Seite am rechten Rand bis zur vollen Bildschirmbreite ziehen (ab 1.3.3), Dateiliste seitlich ziehen, „Breit“ für volle Seitenbreite – wird im Browser gemerkt
-- **Design und Texte im Admin-Bereich** (ab 1.1.0): Seitenname, Untertitel und Logo, alle Stilvariablen (Farben getrennt für Hell/Dunkel, Schrift, Eckenradius), eigenes CSS sowie alle Überschriften und Texte auf Deutsch/Englisch anpassbar – inkl. Sicherung herunterladen/einspielen
+- **Metamod:Source-Plugins (C++)** : aus Git-Repository oder .zip, Linux-Build mit AMBuild
+- **Editor für Metamod-Projekte** : Repository oder ZIP im Browser öffnen, Code ändern, direkt kompilieren, Fehler per Klick anspringen, Projekt als .zip sichern
+- **Editor-Größe anpassbar** : Höhe unten ziehen, Editor an der Grenze zu den Einstellungen breiter ziehen , ganze Seite am rechten Rand bis zur vollen Bildschirmbreite ziehen, Dateiliste seitlich ziehen, „Breit“ für volle Seitenbreite – wird im Browser gemerkt
+- **Design und Texte im Admin-Bereich** : Seitenname, Untertitel und Logo, alle Stilvariablen (Farben getrennt für Hell/Dunkel, Schrift, Eckenradius), eigenes CSS sowie alle Überschriften und Texte auf Deutsch/Englisch anpassbar – inkl. Sicherung herunterladen/einspielen
 
-## Metamod:Source-Compiler (ab 1.2.0)
+## Metamod:Source-Compiler
 
 Oben auf der Seite zwischen **CounterStrikeSharp (C#)** und **Metamod:Source (C++)** umschalten.
 
