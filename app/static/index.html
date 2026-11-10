@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="base-path" content="{{BASE}}">
+  <meta name="site-texts" content="{{SITE_TEXTS}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{SITE_NAME}} – CounterStrikeSharp Online-Compiler</title>
+  <meta name="description" content="Kostenloser Online-Compiler für CounterStrikeSharp (CS2) Plugins. Projekt als .zip hochladen, API-Version wählen, fertiges Plugin herunterladen.">
+  <link rel="icon" href="{{BASE}}/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="{{BASE}}/static/vendor/codemirror.css">
+  <link rel="stylesheet" href="{{BASE}}/static/style.css?v={{VERSION}}">
+  {{CUSTOM_CSS}}
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{{BASE}}/"><span class="logo">{{SITE_LOGO}}</span><span>{{SITE_NAME}}<small>{{SITE_SUBTITLE}}</small></span></a>
+    <div class="pills" id="statusPills"></div>
+    <nav class="nav">
+      <a class="icon-btn" href="{{BASE}}/hilfe" data-i18n="nav.help">Anleitungen</a>
+      <button class="icon-btn" id="langBtn" type="button" title="Sprache / Language">EN</button>
+      <button class="icon-btn" id="themeBtn" type="button" data-i18n-title="nav.theme">◐</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1 id="heroTitle" data-i18n="hero.title">CounterStrikeSharp Online-Compiler</h1>
+    <p id="heroText" data-i18n="hero.text"></p>
+  </section>
+
+  <nav class="modes" id="modeTabs" role="tablist" hidden>
+    <button class="mode" type="button" role="tab" data-mode="cssharp" aria-selected="true"><span class="mode-ico">C#</span><span data-i18n="mode.cssharp">CounterStrikeSharp</span></button>
+    <button class="mode" type="button" role="tab" data-mode="metamod" aria-selected="false"><span class="mode-ico">C++</span><span data-i18n="mode.metamod">Metamod:Source</span></button>
+  </nav>
+
+  <div class="grid" id="metamodMode" hidden>
+    <section class="card">
+      <div class="card-h" data-i18n="mm.title">Metamod-Plugin kompilieren</div>
+      <div class="card-b">
+        <div class="box warn" id="mmNotReady" hidden><p data-i18n="mm.notReady"></p></div>
+        <div class="box info" id="mmEditorNote" hidden><p id="mmEditorNoteText"></p></div>
+
+        <div class="field">
+          <span class="label" data-i18n="mm.source">Quelle</span>
+          <div class="seg">
+            <label><input type="radio" name="mmSource" value="git" checked><span data-i18n="mm.sourceGit">Git-Repository</span></label>
+            <label><input type="radio" name="mmSource" value="zip"><span data-i18n="mm.sourceZip">ZIP hochladen</span></label>
+          </div>
+        </div>
+
+        <div id="mmGitBox">
+          <div class="field">
+            <label for="mmGitUrl" data-i18n="mm.gitUrl">Repository-Adresse</label>
+            <p class="help" id="mmGitHelp"></p>
+            <input type="text" id="mmGitUrl" data-i18n-ph="mm.gitUrlPh" autocomplete="off" spellcheck="false" inputmode="url">
+            <div class="mm-git-actions">
+              <button class="linkish small" id="mmExample" type="button" data-i18n="mm.example">Beispiel einsetzen</button>
+              <button class="btn btn-ghost btn-sm" id="mmOpenEditor" type="button" data-i18n="mm.openEditor">Im Editor öffnen</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="mmGitRef" data-i18n="mm.gitRef">Branch oder Tag (optional)</label>
+            <input type="text" id="mmGitRef" data-i18n-ph="mm.gitRefPh" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <div class="field" id="mmZipBox" hidden>
+          <span class="label" data-i18n="settings.file">Projekt (.zip)</span>
+          <p class="help" data-i18n="mm.fileHelp"></p>
+          <label class="drop" id="mmDrop">
+            <input type="file" id="mmFile" accept=".zip,application/zip" hidden>
+            <strong data-i18n="settings.drop">Datei hierher ziehen oder klicken</strong>
+            <span id="mmDropSub"></span>
+            <div class="fname" id="mmFileName"></div>
+          </label>
+        </div>
+
+        <div class="field" id="mmRuntimeField">
+          <label for="mmRuntime" data-i18n="mm.runtime">Laufzeitumgebung</label>
+          <p class="help" data-i18n="mm.runtimeHelp"></p>
+          <select id="mmRuntime"></select>
+        </div>
+
+        <div class="field">
+          <span class="label" data-i18n="settings.config">Build-Konfiguration</span>
+          <div class="seg">
+            <label><input type="radio" name="mmCfg" value="Release" checked>Release</label>
+            <label><input type="radio" name="mmCfg" value="Debug">Debug</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="mmTag" data-i18n="mm.tag">Versionsnummer (optional)</label>
+          <p class="help" data-i18n="mm.tagHelp"></p>
+          <input type="text" id="mmTag" placeholder="v1.0.0" autocomplete="off" spellcheck="false" maxlength="40">
+        </div>
+
+        <button class="btn btn-primary" id="mmCompileBtn" type="button" data-i18n="mm.compile">Jetzt kompilieren</button>
+        <p class="help" style="margin:8px 0 0;text-align:center" data-i18n="mm.platform"></p>
+      </div>
+    </section>
+
+    <div style="min-width:0">
+      <section class="card result" id="mmResult" hidden></section>
+
+      <section class="card" id="mmProject" hidden>
+        <div class="card-h">
+          <span data-i18n="mm.editorTitle">Projekt</span>
+          <span class="muted small" id="mmProjectName" style="font-weight:500"></span>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" id="mmNewFile" type="button" data-i18n="mm.newFile">Neue Datei</button>
+          <button class="btn btn-ghost btn-sm" id="mmExport" type="button" data-i18n="mm.exportZip">Projekt als .zip</button>
+          <button class="btn btn-ghost btn-sm" id="mmClose" type="button" data-i18n="mm.closeProject">Schließen</button>
+        </div>
+        <div id="mmBanners"></div>
+        <div class="explorer" id="mmExplorer">
+          <div class="tree" id="mmTree"></div>
+          <div class="editor-wrap">
+            <div class="editor-bar">
+              <span class="path" id="mmEditorPath"></span>
+              <button class="btn btn-ghost btn-sm" id="mmDeleteFile" type="button" data-i18n="mm.delete" hidden>Löschen</button>
+              <span class="saved" id="mmModified"></span>
+            </div>
+            <div class="editor" id="mmEditor"><div class="placeholder" data-i18n="mm.select"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="mmInfo">
+        <div class="card-h" data-i18n="mm.infoTitle">So funktioniert es</div>
+        <div class="card-b">
+          <ol class="mm-howto">
+            <li data-i18n="mm.info1"></li>
+            <li data-i18n="mm.info2"></li>
+            <li data-i18n="mm.info3"></li>
+            <li data-i18n="mm.info4"></li>
+          </ol>
+          <p class="help" data-i18n="mm.infoNote"></p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="grid" id="cssharpMode">
+    <!-- Einstellungen -->
+    <section class="card">
+      <div class="card-h" data-i18n="settings.title">Kompilieren</div>
+      <div class="card-b">
+        <div class="field">
+          <label for="versionSel" data-i18n="settings.version">CounterStrikeSharp.API-Version</label>
+          <p class="help" data-i18n="settings.versionHelp"></p>
+          <input type="search" id="versionSearch" data-i18n-ph="settings.versionSearch" autocomplete="off" style="margin-bottom:6px">
+          <select id="versionSel"><option data-i18n="settings.loadingVersions">…</option></select>
+        </div>
+
+        <div class="field">
+          <span class="label" data-i18n="settings.file">Projekt (.zip)</span>
+          <p class="help" data-i18n="settings.fileHelp"></p>
+          <label class="drop" id="drop">
+            <input type="file" id="fileInput" accept=".zip,application/zip" hidden>
+            <strong data-i18n="settings.drop">Datei hierher ziehen oder klicken</strong>
+            <span id="dropSub"></span>
+            <div class="fname" id="fileName"></div>
+          </label>
+        </div>
+
+        <div class="field" id="csprojField" hidden>
+          <label for="csprojSel" data-i18n="settings.csproj">Hauptprojekt</label>
+          <select id="csprojSel"></select>
+        </div>
+
+        <div class="field">
+          <span class="label" data-i18n="settings.config">Build-Konfiguration</span>
+          <p class="help" data-i18n="settings.configHelp"></p>
+          <div class="seg">
+            <label><input type="radio" name="cfg" value="Release" checked>Release</label>
+            <label><input type="radio" name="cfg" value="Debug">Debug</label>
+          </div>
+          <label class="check"><input type="checkbox" id="optLog"><span data-i18n="settings.alwaysLog"></span></label>
+          <label class="check"><input type="checkbox" id="optTree"><span data-i18n="settings.alwaysTree"></span></label>
+        </div>
+
+        <button class="btn btn-primary" id="compileBtn" type="button" data-i18n="settings.compile">Jetzt kompilieren</button>
+        <p class="help" style="margin:8px 0 0;text-align:center" id="limitInfo"></p>
+      </div>
+    </section>
+
+    <div style="min-width:0">
+      <!-- Ergebnis -->
+      <section class="card result" id="result" hidden></section>
+
+      <!-- Projekt / Editor -->
+      <section class="card" id="projectCard">
+        <div class="card-h">
+          <span id="projectTitle" style="cursor:pointer"><span id="treeToggle">▾</span> <span data-i18n="project.title">Projektstruktur</span></span>
+          <span class="muted small" id="projectName" style="font-weight:500"></span>
+          <span class="spacer"></span>
+          <button class="btn btn-ghost btn-sm" id="newFileBtn" type="button" data-i18n="project.new">Neue Datei</button>
+          <button class="btn btn-ghost btn-sm" id="exportBtn" type="button" data-i18n="project.export">Projekt als .zip</button>
+          <button class="btn btn-ghost btn-sm" id="demoBtn" type="button" data-i18n="project.reset">Demo laden</button>
+        </div>
+        <div id="projectBanners"></div>
+        <div class="explorer" id="explorer">
+          <div class="tree" id="tree"></div>
+          <div class="editor-wrap">
+            <div class="editor-bar">
+              <span class="path" id="editorPath"></span>
+              <button class="btn btn-ghost btn-sm" id="deleteFileBtn" type="button" data-i18n="project.delete" hidden>Löschen</button>
+              <span class="saved" id="savedInfo" data-i18n="project.saved"></span>
+            </div>
+            <div class="editor" id="editor"><div class="placeholder" data-i18n="project.select"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Statistik -->
+  <section class="stats" id="stats"></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <span {{OWNER_HIDDEN}}><span data-i18n="footer.made">Betrieben von</span> {{OWNER_LINK}} ·</span>
+      v{{VERSION}}
+      <div class="small" id="privacyNote"></div>
+    </div>
+    <nav>
+      <a href="https://docs.cssharp.dev/" rel="noopener" target="_blank">CounterStrikeSharp</a>
+      <a href="https://www.nuget.org/packages/CounterStrikeSharp.API" rel="noopener" target="_blank">NuGet</a>
+      <a href="{{BASE}}/hilfe" data-i18n="nav.help">Anleitungen</a>
+      <a id="lnkImpressum" href="#" hidden data-i18n="footer.impressum">Impressum</a>
+      <a id="lnkPrivacy" href="#" hidden data-i18n="footer.privacy">Datenschutz</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="{{BASE}}/static/vendor/jszip.min.js"></script>
+<script src="{{BASE}}/static/vendor/codemirror.min.js"></script>
+<script src="{{BASE}}/static/i18n.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/common.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/app.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/mm.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/resize.js?v={{VERSION}}"></script>
+</body>
+</html>

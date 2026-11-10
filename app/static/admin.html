@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="base-path" content="{{BASE}}">
+  <meta name="site-texts" content="{{SITE_TEXTS}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin – {{SITE_NAME}}</title>
+  <link rel="icon" href="{{BASE}}/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="{{BASE}}/static/style.css?v={{VERSION}}">
+  {{CUSTOM_CSS}}
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{{BASE}}/"><span class="logo">{{SITE_LOGO}}</span><span>{{SITE_NAME}}<small>Administration</small></span></a>
+    <div class="pills" id="statusPills"></div>
+    <nav class="nav">
+      <a class="icon-btn" href="{{BASE}}/">Compiler</a>
+      <button class="icon-btn" id="themeBtn" type="button" title="Design">◐</button>
+      <button class="icon-btn" id="logoutBtn" type="button" hidden>Abmelden</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card login" id="loginBox" hidden>
+    <div class="card-h">Anmeldung</div>
+    <div class="card-b">
+      <form id="loginForm">
+        <div class="field">
+          <label for="pw">Admin-Passwort</label>
+          <input type="password" id="pw" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Anmelden</button>
+        <p class="box err" id="loginErr" hidden style="margin-top:12px"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="card login" id="disabledBox" hidden>
+    <div class="card-h">Admin-Bereich deaktiviert</div>
+    <div class="card-b"><p>Setze in der Datei <code>.env</code> ein <code>ADMIN_PASSWORD</code> und starte den Compiler neu (<code>docker compose up -d</code>).</p></div>
+  </section>
+
+  <div id="dash" hidden>
+    <nav class="tabs" role="tablist" aria-label="Admin-Bereiche">
+      <button class="tab" type="button" role="tab" data-tab="overview" aria-selected="true">Übersicht</button>
+      <button class="tab" type="button" role="tab" data-tab="design" aria-selected="false">Design</button>
+      <button class="tab" type="button" role="tab" data-tab="texts" aria-selected="false">Texte</button>
+    </nav>
+
+    <div data-panel="overview">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid admin-grid">
+      <section class="card">
+        <div class="card-h">Letzte Aufträge <span class="spacer"></span><button class="btn btn-ghost btn-sm" id="reloadBtn" type="button">Aktualisieren</button></div>
+        <div class="table-wrap">
+          <table class="list">
+            <thead><tr><th>Zeit</th><th>Status</th><th>Projekt</th><th>CSS-API</th><th>Framework</th><th>Konfig.</th><th>Dauer</th><th>Besucher</th><th>Zusammenfassung</th></tr></thead>
+            <tbody id="jobsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+        <section class="card">
+          <div class="card-h">Wartung</div>
+          <div class="card-b" style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-ghost" data-action="refresh-versions" type="button">Versionsliste neu laden</button>
+            <button class="btn btn-ghost" data-action="cleanup" type="button">Alte Job-Dateien löschen</button>
+            <button class="btn btn-ghost" data-action="clear-nuget" type="button">NuGet-Cache leeren</button>
+            <button class="btn btn-ghost" data-action="pull-image" type="button">.NET-SDK-Image aktualisieren</button>
+            <button class="btn btn-ghost" data-action="rebuild-metamod" type="button">Metamod/CS2-SDK aktualisieren</button>
+            <p class="help" style="margin:4px 0 0">Das SDK-Image regelmäßig aktualisieren, damit Sicherheitsupdates von Microsoft ankommen. Metamod/CS2-SDK nach größeren CS2-Updates aktualisieren.</p>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-h">Sandbox</div>
+          <div class="card-b small" id="sandboxInfo"></div>
+        </section>
+        <section class="card">
+          <div class="card-h">Metamod (C++)</div>
+          <div class="card-b small" id="metamodInfo"></div>
+        </section>
+        <section class="card">
+          <div class="card-h">Beliebteste API-Versionen</div>
+          <div class="card-b small" id="topVersions"></div>
+        </section>
+        <section class="card">
+          <div class="card-h">Einstellungen (.env)</div>
+          <div class="card-b small" id="cfgInfo"></div>
+        </section>
+      </div>
+    </div>
+    </div>
+
+    <div data-panel="design" hidden>
+      <div class="cz-grid">
+        <section class="card">
+          <div class="card-h">Seite</div>
+          <div class="card-b">
+            <div class="field">
+              <label for="czName">Seitenname</label>
+              <input type="text" id="czName" maxlength="80">
+            </div>
+            <div class="field">
+              <label for="czSubtitle">Untertitel</label>
+              <input type="text" id="czSubtitle" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="czLogo">Logo-Text (max. 4 Zeichen)</label>
+              <input type="text" id="czLogo" maxlength="4">
+            </div>
+            <p class="help">Leer lassen = Wert aus der <code>.env</code> (grau angezeigt).</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-h">Eigenes CSS</div>
+          <div class="card-b">
+            <label for="czCss" class="label">Wird nach dem Standard-CSS geladen und kann alles überschreiben</label>
+            <textarea id="czCss" class="code-area" rows="14" spellcheck="false" placeholder=".hero h1 { letter-spacing: 0; }"></textarea>
+            <p class="help">Hat das CSS den Admin-Bereich zerschossen? Öffne <code>/admin?safe=1</code> – dort wird es nicht geladen.</p>
+          </div>
+        </section>
+      </div>
+
+      <section class="card">
+        <div class="card-h">Stilvariablen <span class="spacer"></span>
+          <label class="small cz-check"><input type="checkbox" id="czVarsChanged"> nur geänderte</label>
+        </div>
+        <div class="card-b">
+          <p class="help">Wie bei WoltLab: Die ganze Seite nutzt nur diese Variablen. Leeres Feld = Standardwert (grau). Farben gibt es getrennt für Hell und Dunkel.</p>
+          <div class="table-wrap">
+            <table class="list cz-vars">
+              <thead><tr><th>Variable</th><th>Hell</th><th>Dunkel</th></tr></thead>
+              <tbody id="czVarsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div data-panel="texts" hidden>
+      <section class="card">
+        <div class="card-h">Texte und Überschriften</div>
+        <div class="card-b">
+          <div class="cz-filter">
+            <div>
+              <label for="czLang" class="label">Sprache</label>
+              <select id="czLang"><option value="de">Deutsch</option><option value="en">Englisch</option></select>
+            </div>
+            <div style="flex:1;min-width:180px">
+              <label for="czSearch" class="label">Suchen</label>
+              <input type="search" id="czSearch" placeholder="Überschrift, Kompilieren, hero …">
+            </div>
+            <label class="small cz-check"><input type="checkbox" id="czTextsChanged"> nur geänderte</label>
+          </div>
+          <p class="help">Leeres Feld = Standardtext (grau). Platzhalter wie <code>{mb}</code> oder <code>{v}</code> bitte beibehalten.</p>
+          <div class="table-wrap">
+            <table class="list cz-texts">
+              <thead><tr><th>Schlüssel</th><th>Eigener Text</th></tr></thead>
+              <tbody id="czTextsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="cz-tools" id="czTools" hidden>
+      <button class="btn btn-ghost btn-sm" id="czExport" type="button">Sicherung herunterladen</button>
+      <label class="btn btn-ghost btn-sm" for="czImport">Sicherung einspielen</label>
+      <input type="file" id="czImport" accept="application/json,.json" hidden>
+      <button class="btn btn-ghost btn-sm" id="czReset" type="button">Bereich zurücksetzen</button>
+    </div>
+
+    <div class="cz-bar" id="czBar" hidden>
+      <span class="small" id="czState">Keine Änderungen</span>
+      <span class="spacer"></span>
+      <button class="btn btn-ghost btn-sm" id="czDiscard" type="button">Verwerfen</button>
+      <button class="btn btn-primary btn-sm cz-save" id="czSave" type="button">Speichern</button>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="logModal" hidden>
+  <div class="card">
+    <div class="card-h"><span id="logTitle">Log</span><span class="spacer"></span><button class="btn btn-ghost btn-sm" id="logClose" type="button">Schließen</button></div>
+    <pre class="log" id="logBody"></pre>
+  </div>
+</div>
+
+<script src="{{BASE}}/static/i18n.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/common.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/admin.js?v={{VERSION}}"></script>
+<script src="{{BASE}}/static/admin-customize.js?v={{VERSION}}"></script>
+</body>
+</html>
