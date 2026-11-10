@@ -31,7 +31,7 @@ Oben auf der Seite zwischen **CounterStrikeSharp (C#)** und **Metamod:Source (C+
 - Ablauf: Repository laden (mit Netzwerk, es wird **nur geklont**, kein Projektcode ausgeführt) → Bauen **ohne Netzwerk**, mit denselben Schutzmaßnahmen wie beim C#-Build
 - Fehlende `hl2sdk-manifests` (typisch bei GitHub-ZIP-Downloads) werden automatisch ergänzt; ohne Git-Tags wird die eingegebene Versionsnummer verwendet
 
-**Code ändern (ab 1.3.0):** Bei Git-Quelle auf „Im Editor öffnen“ klicken bzw. eine .zip auswählen – das Projekt öffnet sich rechts im Editor. Änderungen werden beim Kompilieren mitgeschickt; mit „Projekt als .zip“ sicherst du deinen Stand (der Editor speichert nichts dauerhaft auf dem Server).
+**Code ändern :** Bei Git-Quelle auf „Im Editor öffnen“ klicken bzw. eine .zip auswählen – das Projekt öffnet sich rechts im Editor. Änderungen werden beim Kompilieren mitgeschickt; mit „Projekt als .zip“ sicherst du deinen Stand (der Editor speichert nichts dauerhaft auf dem Server).
 
 **Erster Start:** Die Build-Umgebung wird automatisch gebaut. Dafür lädt Docker den Source2ZE-Build-Container sowie Metamod:Source und das CS2-SDK (mehrere GB, einige Minuten). Den Stand siehst du oben in der Statusanzeige („Metamod: Wird eingerichtet“) und im Admin-Bereich.
 
